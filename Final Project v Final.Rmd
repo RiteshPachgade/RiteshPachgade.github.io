@@ -1,0 +1,306 @@
+---
+title: "Crash Course in Data Science"
+author: "Matthew Motley and Ritesh Pachgade"
+date: "5/10/2019"
+output: html_document
+---
+
+1 Introduction and Overview
+
+1.1 General Tutorial Information
+
+This tutorial is a crash course to data science and is meant for beginners. Users will be walked through the entire data science pipeline: data curation, parsing, and management; exploratory data analysis; hypothesis testing and machine learning to provide analysis” (Bravo 2019), using a real world data set example of which can be downloaded here: 
+World Happiness Report -> https://www.kaggle.com/unsdsn/world-happiness 
+An example problem will be specified and solved in this tutorial using this data set, while insights will be explained at the end of a section elaborating on what was learned in that section.
+
+For data processing we will be using the R Data Science Toolbox, which is a combination of R and RStudio. Various packages will be used that can be installed directly in the RStudio. Data processing will be performed both R and SQL programming languages.  
+
+A tutorial for setting up the R Data Science Toolbox (R and RStudio) can be found here: 
+Setting up R Data Science Toolbox -> http://www.hcbravo.org/IntroDataSci/bookdown-notes/setting-up-the-r-data-science-toolbox.html (Bravo 2019).
+
+External sources will be used in defining or presenting the material. For those parts, references will be provided to those sources. 
+
+1.2.1 What is Data Science?
+
+According to Dr. Hector Bravo, Associate Professor of Computer Science at the University of Maryland, “Data science encapsulates the interdisciplinary activities required to create data-centric artifacts and applications that address specific scientific, socio-political, business, or other questions” (Bravo 2019). Dr. Bravo breaks down and defines this statement as follows:
+Data: Measurable units of information gathered or captured from activity of people, places and things (Bravo 2019).
+Specific Questions: Seeking to understand a phenomenon, natural, social or other, can we formulate specific questions for which an answer posed in terms of patterns observed, tested and or modeled in data is appropriate (Bravo 2019).
+Interdisciplinary activities: Formulating a question, assessing the appropriateness of the data and findings used to find an answer require understanding of the specific subject area. Deciding on the appropriateness of models and inferences made from models based on the data at hand requires understanding of statistical and computational methods (Bravo 2019).
+Data-Centric Artifacts and Applications: Answers to questions derived from data are usually shared and published in meaningful, succinct but sufficient, reproducible artifacts (papers, books, movies, comics). Going a step further, interactive applications that let others explore data, models and inferences are great (Bravo 2019).
+
+Insights: More simply put, data science is getting data, organizing that data to be easily understood and processed, and making decisions from the data and its processing. Data science is important in most every field in the modern world.  Examples include: 
+Search engines like Google knowing exactly what we are searching for on the internet.
+Public health data being processed to analyze and prevent the outbreak of infectious diseases.
+Investigating what movies are the most popular in relation to box office gross.
+Data science can be used to analyze just about anything from any kind of topic.
+
+1.2.2 General Workflow in Data Science
+
+A simple organization of the data science workflow can be organized into the following parts:
+
+Define the goal: What is the problem we are trying to solve?
+
+Find and collect the data: What information needs to be collected? Where can that information be found?
+
+Processing the data: From the data we have collected, what is actually needed? What is not needed and can be cleaned, or removed?
+
+Exploring and analyzing the data: After cleaning the data, what patterns or trends can be found?
+
+Show the results of the analysis: How can we easily represent the data and patterns that were found in the analysis? What models (ie. tables, graphs, or charts) could be used to show these results? Does the model(s) solve the problem?
+
+Insights: As with any science, being successful relies on breaking down the necessary tasks into separate but related parts.  Each of the parts in the data science process are interdependent, and therefore its deployment from beginning to end is imperative for success. A more in depth illustration of the Data Science Workflow can be found here -> http://www.hcbravo.org/IntroDataSci/bookdown-notes/introduction-and-overview.html#general-workflow
+From that link, a more complex illustration of the data science life cycle is copied here for reference (Bravo, 2019):
+http://www.hcbravo.org/IntroDataSci/bookdown-notes/img/zumel_mount_cycle.png
+
+1.2.3 Transition to Crash Course
+
+Sections 2-6 will illustrate the data science process using the World Happiness Report data -> https://www.kaggle.com/unsdsn/world-happiness
+set as an example.
+
+2 Defining the Goal
+
+In defining a goal, some key questions should be answered:
+What is the question or problem?
+What audience cares about this question or problem?
+How well can this problem or question be expected to be answered?
+How well does this audience expect this problem to be solved or question answered?
+
+As an example, we’ve defined our own goal as follows:
+Happiness, or the pursuit there of, has been important to mankind since its early existence. So what factors contribute to people’s happiness in the world? 
+Is time a factor in people’s happiness? Is wealth, government stability, or generosity a feature of happiness?
+Most people living in the world would care about answering this question.
+With the right data and analysis, this question can be generally answered for a population.
+We would think this audience (people in general) would have high expectations for this question to be answered.
+
+Insights: Defining a goal and answering the above questions is the critical first step in starting the data science process. Without a defined goal, the remaining processes cannot take place.
+
+3 Find and Collect the Data
+
+A quick google search can yield an almost infinite amount of data sets on an infinite amount of topics and sites containing pertinent data sets. One such site, Kaggle, can be used to find data sets.
+
+For our example on happiness in the world, Kaggle -> https://www.kaggle.com/
+was used to find a data set called World Happiness Report -> https://www.kaggle.com/unsdsn/world-happiness
+This data set is effective to answering our previously proposed question about the factors influence happiness.  Not only does this data set have variables for happiness rank and happiness score, but also for variables such as economy, family, health, freedom, government trust, and generosity, which could verify differences in happiness in a population.
+
+```{r setup, include=FALSE}
+
+# Make sure to install and include these packages!
+library(dplyr)
+library(magrittr)
+library(tidyverse)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r files}
+temp_2015 <- 
+  read_csv("/Users/Ritesh/Documents/320/2015.csv")
+temp_2016 <- 
+  read_csv("/Users/Ritesh/Documents/320/2016.csv")
+temp_2017 <- 
+  read_csv("/Users/Ritesh/Documents/320/2017.csv")
+
+temp_2015
+temp_2016
+temp_2017
+
+```
+
+The .csv files are downloaded locally, and RStudio is used to get and capture the data to be used in further processing and analysis.  The read_csv command is used to read the World Happiness Report .csv file, and is subsequently assigned to table(s) or data.frame(s) depending on the year of the report (tab_2015, tab_2016, tab_2017).  These table variables,  if listed in the r code block, one per line, can be used to display the data collected from the .csv files.
+
+A data.frame is a basic structure used to represent data (like a spreadsheet). Rows are observations (entities) while columns are variables that describe observations (attributes).
+
+For more information on getting the data: Getting the Data -> http://www.hcbravo.org/IntroDataSci/bookdown-notes/measurements-and-data-types.html#getting-data
+
+Insights: The internet is home to so much data that is ready and waiting to be used in further data science exploration and analysis.  Any interest and research in minutes can give you an immense about of information that can be further collected into RStudio.  RStudio is a powerful tool that can be used to further explore this data. Subsequent sections in this tutorial will show how to further process and analyze such data sets.
+
+4 Processing the data
+
+Before processing the collected data.frame(s), a few key RStudio operations and concepts involving one table can be found here for reference: Basic Operations -> http://www.hcbravo.org/IntroDataSci/bookdown-notes/principles-basic-operations.html and 
+More Operations -> http://www.hcbravo.org/IntroDataSci/bookdown-notes/principles-more-operations.html.
+
+```{r processing}
+
+tab_2015 <-
+  select(temp_2015,-c(Region))
+tab_2016 <-
+  select(temp_2016,-c(Region))
+
+tab_2015
+tab_2016 
+```
+In this block of code, we filtered the data, removing the region attribute as it was not pertinent to the data analysis (we only needed the country not the region).
+
+Insights: Most data sets can have millions (if not billions and trillions) of different pieces data, of which is not pertinent to the current goal.  It is therefore advantageous to process the data, removing information that will only clutter, confuse, and reduce the efficiency of processing the data.  
+
+5 Exploring and analyzing the data
+
+The goal of Exploratory Data Analysis (EDA) is to perform an initial exploration of attributes/variables across entities/observations.  Please reference this -> http://www.hcbravo.org/IntroDataSci/bookdown-notes/exploratory-data-analysis-visualization.html
+for an explanation on this process.
+
+```{r score_EDA}
+
+scoreVGDP <- tab_2015 %>%
+  ggplot(aes(x = `Happiness Score`, y = `Economy (GDP per Capita)`)) +
+  geom_point() +
+  geom_smooth(method='auto', color = "red") +
+  ggtitle("Happiness Score vs GDP") +
+  labs(y="GDP") +
+  labs(x="Happiness Score")
+scoreVGDP
+
+scoreVHLT <- tab_2015 %>%
+  ggplot(aes(x=`Happiness Score`, y=`Health (Life Expectancy)`)) +
+  geom_point() +
+  geom_smooth(method='auto', color = "red") +
+  ggtitle("Happiness Score vs Health (Life Expectancy)") +
+  labs(y="Health") +
+  labs(x="Happiness Score")
+scoreVHLT
+
+scoreVFm <- tab_2015 %>%
+  ggplot(aes(x = `Happiness Score`, y = Family)) +
+  geom_point() +
+  geom_smooth(method='auto', color = "red") + 
+  ggtitle("Happiness Score vs Family Score") +
+  labs(y="Family") +
+  labs(x="Happiness Score")
+scoreVFm
+
+scoreVGen <- tab_2015 %>%
+  ggplot(aes(x = `Happiness Score`, y = Generosity)) +
+  geom_point() +
+  geom_smooth(method='auto', color = "red") + 
+  ggtitle("Happiness Score vs Generosity Score") +
+  labs(y="Generosity") +
+  labs(x="Happiness Score")
+scoreVGen
+
+scoreVTrust <- tab_2015 %>%
+  ggplot(aes(x = `Happiness Score`, y = `Trust (Government Corruption)`)) +
+  geom_point() +
+  geom_smooth(method='auto', color = "red") + 
+  ggtitle("Happiness Score vs Government Trust Score") +
+  labs(y="Government Trust") +
+  labs(x="Happiness Score")
+scoreVTrust
+
+scoreVFreedom <- tab_2015 %>%
+  ggplot(aes(x = `Happiness Score`, y = Freedom)) +
+  geom_point() +
+  geom_smooth(method='auto', color = "red") + 
+  ggtitle("Happiness Score vs Freedom Score") +
+  labs(y="Freedom Trust") +
+  labs(x="Happiness Score")
+scoreVTrust
+
+scoreAll <- tab_2015 %>%
+  ggplot(aes(x=`Happiness Score`)) +
+  geom_smooth(method='auto',aes(y=Family, color="Family")) +
+  geom_smooth(method='auto',aes(y=`Economy (GDP per Capita)` ,color="Economy (GDP per Capita)")) +
+  geom_smooth(method='auto',aes(y=Generosity,  color="Generosity")) +
+  geom_smooth(method='auto',aes(y=`Health (Life Expectancy)`,  color="Health (Life Expectancy)")) +
+  geom_smooth(method='auto',aes(y=`Trust (Government Corruption)`,  color="Trust (Government Corruption)")) +
+  geom_smooth(method='auto',aes(y=Freedom, color="Freedom")) + 
+  ggtitle("Features of Happiness") +
+  labs(y="Features of Happiness Scores") +
+  labs(x="Happiness Score")
+scoreAll
+
+```
+
+For this section of analysis, we first plotted data for each feature of happiness (y value) by happiness score (x value) for the 2015 year.  Separately, this data does not show much, so we combined all happiness features into one plot.  We then realized that we needed to normalize the data, which is as follows:
+
+```{r normalized}
+
+tab_2015$`Health (Life Expectancy)` <- scale(tab_2015$`Health (Life Expectancy)`)
+tab_2015$`Economy (GDP per Capita)` <- scale(tab_2015$`Economy (GDP per Capita)`)
+tab_2015$Family <- scale(tab_2015$Family)
+tab_2015$Generosity <- scale(tab_2015$Generosity)
+tab_2015$`Trust (Government Corruption)` <- scale(tab_2015$`Trust (Government Corruption)`)
+tab_2015$`Freedom` <- scale(tab_2015$`Freedom`)
+
+scoreAll <- tab_2015 %>%
+ggplot(aes(x=`Happiness Score`)) +
+geom_smooth(method='auto',aes(y=Family, color="Family")) +
+geom_smooth(method='auto',aes(y=`Economy (GDP per Capita)` , color="Economy (GDP per Capita)")) +
+geom_smooth(method='auto',aes(y=Generosity, color="Generosity")) +
+geom_smooth(method='auto',aes(y=`Health (Life Expectancy)`, color="Health (Life Expectancy)")) +
+geom_smooth(method='auto',aes(y=`Trust (Government Corruption)`, color="Trust (Government Corruption)")) +
+geom_smooth(method='auto',aes(y=Freedom, color="Freedom")) +
+ggtitle("Features of Happiness") +
+labs(y="Features of Happiness Scores") +
+labs(x="Happiness Score")
+scoreAll
+
+```
+
+In order to properly vizualize the data, normalizing the data was key so that the units of each feature do not interact with our interpretation of their influence on happiness.  That is where we found the normalized part in our conclusions.
+
+Conclusions of our data shows that we can see that in the context of happiness, economy, family, and health are strongly coorelated with each other, while generosity and trust are strongly correlated with each other.  Freedom on the otherhand seems to be related to both sets of groups.  Overall, the happier a country is the more prevalent each of the features they will have.
+
+To answer our initial question, there are certain features that show an association between happiness.
+
+Insights: Exploring and analyzing the data is the stage of data science that allows the data you have collected and cleaned to be transformed and manipulated into something that can be further understand and analyzed past the information collected.  The information in and of itself is important, but turning it into something more informative is key to the data science process.
+
+6 Further Visualization and Publishing of Results in RStudio
+
+6.1 Visualizing Results in RStudio
+
+This section describes a mean to further produce the data in various forms to express both the data and the results of the data analysis.  As described previously, displaying the data frame as a table is one such method in visualizing the data.  A more robust and practical way to visualize the data is in the form of a chart, graph, or plot.  References to building charts, graphs, and plots in RStudio can be found here -> http://www.hcbravo.org/IntroDataSci/bookdown-notes/basic-plotting-with-ggplot.html
+using the ggplot package in RStudio.  We will be using this package to visualize our findings with the World Happiness Report data set.
+
+```{r filter_top_happiness}
+top_2015 <- 
+  tab_2015 %>%
+  filter(`HappinessRank` <= 10)
+top_2016 <- 
+  tab_2016 %>%
+  filter(`Happiness Rank` <= 10)
+top_2017 <- 
+  temp_2017 %>%
+  filter(Happiness.Rank <= 10)
+
+top_2015
+top_2016
+top_2017
+```
+
+Using additional r code, we have created 3 new tables holding just the top 10 countries by happiness rating.
+
+```{r plot_top_happiness}
+top_2015 %>%
+  ggplot(aes(x=reorder(Country, -`Happiness Score`), y=`Happiness Score`)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle=90, vjust=0.5), plot.title = element_text(hjust = 0.5)) + 
+  ggtitle("Happiness Score of top 10 Countries (2015)") +
+  labs(x="Country") +
+  labs(y="Happiness Score")
+
+top_2016 %>%
+  ggplot(aes(x=reorder(Country, -`Happiness Score`), y=`Happiness Score`)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle=90, vjust=0.5), plot.title = element_text(hjust = 0.5)) + 
+  ggtitle("Happiness Score of top 10 Countries (2016)") +
+  labs(x="Country") +
+  labs(y="Happiness Score")
+
+top_2017 %>%
+  ggplot(aes(x=reorder(Country, -Happiness.Score), y=Happiness.Score)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle=90, vjust=0.5), plot.title = element_text(hjust = 0.5)) + 
+  ggtitle("Happiness Score of top 10 Countries (2017)") +
+  labs(x="Country") +
+  labs(y="Happiness Score")
+```
+
+The three plots show the 10 highest countries and their happiness scores, which simply put, have a decreasing trend of happiness scores.  Three plots are made for 2015, 2016, and 2017.
+
+6.2 Publishing Results Using RStudio
+
+An impressive and effective publishing tool known as Rmarkdown can be used in RStudio to publish the work and findings made in an RStudio project.  A brief introduction to using Rmarkdown can be found here -> http://www.hcbravo.org/IntroDataSci/bookdown-notes/brief-introduction-to-rmarkdown.html
+
+Insights: Properly visualizing and publishing your data science projects is almost as critical as coming up with the initial goal because if no one can properly see your results than they will not have much to say or learn about it.  Therefore, it may not even exist.  That is why the operations and procedures in this section are of critical importance as conveying the data you have analyzed is critical to bringing your results to your audience.
+
+7 Tutorial Conclusion
+
+I hope you found this simple crash course tutorial to data science not only informative, but interesting! The world of data science is vast and is ready for you to explore and analyze it!
